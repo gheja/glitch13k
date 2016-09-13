@@ -1,0 +1,93 @@
+// DEBUG BEGIN
+try {
+// DEBUG END
+var MAP_WIDTH = 32;
+var MAP_HEIGHT = 15;
+var MAP_DATA = "000000000000000000000000000000000000000000000003333333300000000000000000000000031111113333333330000000000000000311111161161111300000000000000003111111611611113000000000000000031111116116111130000000000000000311111133333313300000000000000003333133300000000000000000000000000000000000000000000000000000000033333333330000000000000000000000311111111300000000000000000000001111111111000000000000000000000031111111130000000000000000000000333333333300000000000000000000000000000000000000";
+var MAP_OBJECT_NAMES;
+	var LO1;
+// DEBUG BEGIN
+} catch (err) { alert(err); }
+// DEBUG END
+
+function mapInit()
+{
+// DEBUG BEGIN
+	try {
+// DEBUG END
+	_objs.length = 0;
+	
+	mapLoadFromString(MAP_WIDTH, MAP_HEIGHT, MAP_DATA);
+	
+	_objs.push(
+		new ObjPlayer(3, 2),
+		new ObjDoor(19, 7, 0),
+		new ObjPortal(21, 4, 2, 0, 1, 0, 1),
+		new ObjPotion(24, 4, 2)
+	);
+	LO1 = new LightsOut(17, 3, 3, 3, 2);
+
+	MAP_OBJECT_NAMES = [ 'PLAYER', 'DOOR12', 'PORTAL2', 'POT3'];
+
+
+// DEBUG BEGIN
+} catch (err) { alert(err); }
+// DEBUG END
+}
+
+function mapUpdate()
+{
+// DEBUG BEGIN
+try {
+// DEBUG END
+	var PLAYER = _objs[0];
+	var DOOR12 = _objs[1];
+	var PORTAL2 = _objs[2];
+	var POT3 = _objs[3];
+_glitch_time_left = 9999999;
+
+DOOR1.targetDoor = DOOR4;
+DOOR2.targetDoor = DOOR3;
+DOOR3.targetDoor = DOOR2;
+DOOR4.targetDoor = DOOR1;
+DOOR5.targetDoor = DOOR5;
+DOOR9.targetDoor = DOOR2;
+DOOR11.targetDoor = DOOR6;
+DOOR12.targetDoor = DOOR14;
+DOOR13.targetDoor = DOOR12;
+DOOR14.targetDoor = DOOR12;
+DOOR15.targetDoor = DOOR6;
+DOOR6.targetDoor = DOOR15;
+
+DOOR16.targetDoor = DOOR_A1;
+DOOR_A1.targetDoor = DOOR16;
+DOOR_A2.targetDoor = DOOR_A3;
+DOOR_A3.targetDoor = DOOR_A2;
+
+PORTAL1.kill = true;
+
+if (SW1.switchStatus == true)
+{
+	DOOR1.targetDoor = DOOR5;
+	DOOR5.targetDoor = DOOR1;
+}
+
+if (SW2.switchStatus == true)
+{
+	PORTAL1.kill = false;
+}
+
+if (_fhdk_done)
+{
+	DOOR11.targetDoor = DOOR2;
+}
+
+if (LO1.solved)
+{
+	PORTAL2.kill = false;
+}
+
+// DEBUG BEGIN
+} catch (err) { alert(err); }
+// DEBUG END
+}

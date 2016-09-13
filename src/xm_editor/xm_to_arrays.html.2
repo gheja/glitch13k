@@ -1,0 +1,360 @@
+<html>
+	<head>
+		<script src="3rdparty/jDataView/src/jdataview.js"></script>
+		<script src="lib/arrays.js"></script>
+		<script src="lib/dictionary.js"></script>
+		<script src="lib/base64.js"></script>
+		<script src="synth/synth_xm_reader.js"></script>
+		<script type="text/javascript">
+			function _log(s)
+			{
+				console.log(s);
+				document.getElementById("log").innerHTML += s + "<br/>";
+			}
+			
+			function process_file(event)
+			{
+				// file == event.target.result
+				
+				var xm_reader, xm, channels, i, j, k, a, b, s;
+				
+				try
+				{
+					xm_reader = new SynthXmReader();
+					if (!xm_reader.readFile(event.target.result))
+					{
+						_log("Failed to open file, see console log for details");
+						return false;
+					}
+					xm_reader.unpackPatternRows();
+					xm = xm_reader.getXmStructure();
+					
+					// prepare channels array
+					channels = [];
+					for (k=0; k<xm.header.number_of_channels; k++)
+					{
+						channels.push({ instrument: 'unknown', sample: 'unknown', data: [], base_note: -1, is_unused: true });
+					}
+					
+					// load channel data
+					for (i=0; i<xm.header.number_of_patterns; i++)
+					{
+						for (j=0; j<xm.patterns[i].data_unpacked.length; j += xm.header.number_of_channels)
+						{
+							for (k=0; k<xm.header.number_of_channels; k++)
+							{
+								a = xm.patterns[i].data_unpacked[j + k];
+								
+								if (a[0] != 0)
+								{
+									channels[k].is_unused = false;
+								}
+								
+								channels[k].data.push(a[0]);
+								
+								if (a[1] != 0)
+								{
+									channels[k].instrument = xm.instruments[a[1] - 1].name;
+									channels[k].sample = xm.instruments[a[1] - 1].samples[0].name;
+									channels[k].base_note = xm.instruments[a[1] - 1].samples[0].relative_note_number; // + xm.instruments[a[1] - 1].samples[0].finetune / 16 / 4 / 2;
+								}
+							}
+						}
+					}
+					
+					s = "[\n";
+					s += "\t" + Math.round(1000 / ((xm.header.default_bpm / 60) * (xm.header.default_tempo / 2))) + ", \n";
+					s += "\t[\n";
+					for (i=0; i<channels.length; i++)
+					{
+						if (channels[i].is_unused)
+						{
+							continue;
+						}
+						
+						// s += "\t\t[ /* " + channels[i].instrument + " */, ";
+						s += "\t\t[ /* " + channels[i].sample + " */, ";
+						s += (channels[i].base_note * 2) + ", [ ";
+						for (j=0; j<channels[i].data.length; j++)
+						{
+							if (channels[i].data[j] == 0 && j < channels[i].data.length - 1)
+							{
+								s += "";
+							}
+							else
+							{
+								s += channels[i].data[j];
+							}
+							if (j < channels[i].data.length - 1)
+							{
+								s += ",";
+							}
+						}
+						s += "] ]";
+						if (i < channels.length - 2)
+						{
+							s += ",";
+						}
+						s += "\n";
+					}
+					s += "\t]\n";
+					s += "]\n";
+					document.getElementById("output_instrument_titles").innerHTML = s;
+				}
+				catch (e)
+				{
+					console.log("Exception: " + e);
+					_log("Failed to open/process file, see console log for details");
+					return false;
+				}
+				
+				_log("File was successfully loaded.");
+			}
+			
+			function file_upload(obj)
+			{
+				var reader = new FileReader();
+				reader.onload = process_file;
+				reader.readAsArrayBuffer(obj.files[0]);
+				
+				obj.style.display = "none";
+				
+				var div = document.createElement("div");
+				div.innerHTML = obj.value;
+				document.getElementById("files").appendChild(div);
+				
+				var upload = document.createElement("input");
+				upload.type = "file";
+				upload.onchange = obj.onchange;
+				document.getElementById("files").appendChild(upload);
+			}
+			
+/*
+			function process_files()
+			{
+				if (!xm_converter.processFiles())
+				{
+					_log("Processing failed, see console log for details");
+					return false;
+				}
+				_log("Processing successfully finished.");
+				
+				var result = xm_converter.getGeneratedData();
+				document.getElementById("output_instrument_titles").innerHTML = result.instrument_titles;
+				document.getElementById("output_data").innerHTML = result.data_base64;
+				document.getElementById("output_dictionary").innerHTML = result.dictionary_base64;
+			}
+*/
+			var currentX = 1;
+			
+			function get(id)
+			{
+				return document.getElementById(id);
+			}
+			
+			function prepare()
+			{
+			}
+			
+			function play()
+			{
+				prepare();
+				currentX = 0;
+				next();
+			}
+			
+			function stop()
+			{
+			}
+			
+			function next()
+			{
+				var i, j, a, oldX, ok;
+				
+				oldX = currentX;
+				
+				for (i = currentX + 1; i != oldX; i = (i + 1) % 16)
+				{
+					ok = false;
+					
+					for (j=1; j<=16; j++)
+					{
+						a = get("x" + i + "c" + j);
+						if (a && a.checked)
+						{
+							ok = true;
+						}
+					}
+					
+					if (ok)
+					{
+						currentX = i;
+						break;
+					}
+				}
+				
+				a = get('x' + oldX);
+				if (a)
+				{
+					a.className = "";
+				}
+				get('x' + currentX).className = "highlighted";
+			}
+		</script>
+		<style type="text/css">
+			#log
+			{
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				height: 100px;
+				background: rgba(255,255,0,0.5);
+				font-family: Tahoma, sans;
+				font-size: 9pt;
+				padding: 4px;
+				overflow-y: scroll;
+			}
+			textarea
+			{
+				width: 100%;
+				height: 100px;
+				word-wrap: break-word;
+			}
+			.highlighted
+			{
+				background: #ffff00;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="files">
+			<input type="file" onchange="file_upload(this);" />
+			<input type="button" value="Play" onclick="play(); return false;" />
+			<input type="button" value="Stop" onclick="stop(); return false;" />
+			<input type="button" value="Next" onclick="next(); return false;" />
+		</div>
+		
+		jsfxr params:
+		<textarea id="jsfxr"></textarea>
+		
+		<div id="x1">
+			<input type="checkbox" id="x1c1" value="1" checked="checked" />
+			<input type="checkbox" id="x1c2" value="1" checked="checked" />
+			<input type="checkbox" id="x1c3" value="1" checked="checked" />
+			<input type="checkbox" id="x1c4" value="1" checked="checked" />
+			<input type="checkbox" id="x1c5" value="1" checked="checked" />
+			<input type="checkbox" id="x1c6" value="1" checked="checked" />
+			<input type="checkbox" id="x1c7" value="1" checked="checked" />
+			<input type="checkbox" id="x1c8" value="1" checked="checked" />
+			<input type="checkbox" id="x1c9" value="1" checked="checked" />
+			<input type="checkbox" id="x1c10" value="1" checked="checked" />
+			<input type="checkbox" id="x1c11" value="1" checked="checked" />
+			<input type="checkbox" id="x1c12" value="1" checked="checked" />
+			<input type="checkbox" id="x1c13" value="1" checked="checked" />
+			<input type="checkbox" id="x1c14" value="1" checked="checked" />
+			<input type="checkbox" id="x1c15" value="1" checked="checked" />
+			<input type="checkbox" id="x1c16" value="1" checked="checked" />
+		</div>
+		
+		<div id="x2">
+			<input type="checkbox" id="x2c1" value="1" />
+			<input type="checkbox" id="x2c2" value="1" />
+			<input type="checkbox" id="x2c3" value="1" />
+			<input type="checkbox" id="x2c4" value="1" />
+			<input type="checkbox" id="x2c5" value="1" />
+			<input type="checkbox" id="x2c6" value="1" />
+			<input type="checkbox" id="x2c7" value="1" />
+			<input type="checkbox" id="x2c8" value="1" />
+			<input type="checkbox" id="x2c9" value="1" />
+			<input type="checkbox" id="x2c10" value="1" />
+			<input type="checkbox" id="x2c11" value="1" />
+			<input type="checkbox" id="x2c12" value="1" />
+			<input type="checkbox" id="x2c13" value="1" />
+			<input type="checkbox" id="x2c14" value="1" />
+			<input type="checkbox" id="x2c15" value="1" />
+			<input type="checkbox" id="x2c16" value="1" />
+		</div>
+		
+		<div id="x3">
+			<input type="checkbox" id="x3c1" value="1" />
+			<input type="checkbox" id="x3c2" value="1" />
+			<input type="checkbox" id="x3c3" value="1" />
+			<input type="checkbox" id="x3c4" value="1" />
+			<input type="checkbox" id="x3c5" value="1" />
+			<input type="checkbox" id="x3c6" value="1" />
+			<input type="checkbox" id="x3c7" value="1" />
+			<input type="checkbox" id="x3c8" value="1" />
+			<input type="checkbox" id="x3c9" value="1" />
+			<input type="checkbox" id="x3c10" value="1" />
+			<input type="checkbox" id="x3c11" value="1" />
+			<input type="checkbox" id="x3c12" value="1" />
+			<input type="checkbox" id="x3c13" value="1" />
+			<input type="checkbox" id="x3c14" value="1" />
+			<input type="checkbox" id="x3c15" value="1" />
+			<input type="checkbox" id="x3c16" value="1" />
+		</div>
+		
+		<div id="x4">
+			<input type="checkbox" id="x4c1" value="1" />
+			<input type="checkbox" id="x4c2" value="1" />
+			<input type="checkbox" id="x4c3" value="1" />
+			<input type="checkbox" id="x4c4" value="1" />
+			<input type="checkbox" id="x4c5" value="1" />
+			<input type="checkbox" id="x4c6" value="1" />
+			<input type="checkbox" id="x4c7" value="1" />
+			<input type="checkbox" id="x4c8" value="1" />
+			<input type="checkbox" id="x4c9" value="1" />
+			<input type="checkbox" id="x4c10" value="1" />
+			<input type="checkbox" id="x4c11" value="1" />
+			<input type="checkbox" id="x4c12" value="1" />
+			<input type="checkbox" id="x4c13" value="1" />
+			<input type="checkbox" id="x4c14" value="1" />
+			<input type="checkbox" id="x4c15" value="1" />
+			<input type="checkbox" id="x4c16" value="1" />
+		</div>
+		
+		<div id="x5">
+			<input type="checkbox" id="x5c1" value="1" />
+			<input type="checkbox" id="x5c2" value="1" />
+			<input type="checkbox" id="x5c3" value="1" />
+			<input type="checkbox" id="x5c4" value="1" />
+			<input type="checkbox" id="x5c5" value="1" />
+			<input type="checkbox" id="x5c6" value="1" />
+			<input type="checkbox" id="x5c7" value="1" />
+			<input type="checkbox" id="x5c8" value="1" />
+			<input type="checkbox" id="x5c9" value="1" />
+			<input type="checkbox" id="x5c10" value="1" />
+			<input type="checkbox" id="x5c11" value="1" />
+			<input type="checkbox" id="x5c12" value="1" />
+			<input type="checkbox" id="x5c13" value="1" />
+			<input type="checkbox" id="x5c14" value="1" />
+			<input type="checkbox" id="x5c15" value="1" />
+			<input type="checkbox" id="x5c16" value="1" />
+		</div>
+		
+		<div id="x6">
+			<input type="checkbox" id="x6c1" value="1" />
+			<input type="checkbox" id="x6c2" value="1" />
+			<input type="checkbox" id="x6c3" value="1" />
+			<input type="checkbox" id="x6c4" value="1" />
+			<input type="checkbox" id="x6c5" value="1" />
+			<input type="checkbox" id="x6c6" value="1" />
+			<input type="checkbox" id="x6c7" value="1" />
+			<input type="checkbox" id="x6c8" value="1" />
+			<input type="checkbox" id="x6c9" value="1" />
+			<input type="checkbox" id="x6c10" value="1" />
+			<input type="checkbox" id="x6c11" value="1" />
+			<input type="checkbox" id="x6c12" value="1" />
+			<input type="checkbox" id="x6c13" value="1" />
+			<input type="checkbox" id="x6c14" value="1" />
+			<input type="checkbox" id="x6c15" value="1" />
+			<input type="checkbox" id="x6c16" value="1" />
+		</div>
+		
+		Output:
+		<textarea id="output"></textarea>
+		
+		<div id="log"></div>
+	</body>
+</html>

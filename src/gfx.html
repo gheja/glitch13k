@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
+		<script type="text/javascript" src="consts.js"></script>
+		<script type="text/javascript" src="resources.js"></script>
+		<script type="text/javascript" src="lib.js"></script>
+		<script type="text/javascript" src="gfx_editor.js"></script>
+		<style type="text/css">
+			html,
+			body
+			{
+				padding: 0;
+				margin: 0;
+				background: #1b1b1b;
+				overflow: hidden;
+			}
+			#controls,
+			#controls-play
+			{
+				position: fixed;
+				top: 0;
+				right: 0;
+				background: rgba(255, 255, 0, 0.5);
+				padding: 4px;
+				z-index: 10000;
+			}
+			#controls-play
+			{
+				display: none;
+			}
+			#canvas1
+			{
+				position: fixed;
+			}
+			#canvas2
+			{
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 200px;
+				height: 120px;
+				opacity: 0.8;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas1" width="640" height="900">Canvas not supported :(</canvas>
+		<div id="controls">
+			<textarea id="palettes_text" cols="18" rows="25"></textarea><br/>
+			<textarea id="obj_palette_text" cols="18" rows="25"></textarea>
+		</div>
+	</body>
+</html>
