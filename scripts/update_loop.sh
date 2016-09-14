@@ -8,8 +8,6 @@ cd "$dir/.."
 last=""
 
 while [ 1 ]; do
-	# new=`stat --format '%s,%Z' a.js sprites.png`
-	# new=`find ./src -printf '%A@,%C@,%T@,%s,%M,%G,%U,%p\n'`
 	new=`find ./src -type f -printf '%C@,%T@,%s,%M,%G,%U,%p\n' | grep -v '.#'`
 	
 	if [ "$new" != "$last" ]; then
