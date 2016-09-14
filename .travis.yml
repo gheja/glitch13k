@@ -1,5 +1,5 @@
 before_script:
   - ./scripts/prepare.sh
 
-script
+script:
   - ./scripts/build.sh
