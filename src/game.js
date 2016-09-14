@@ -54,20 +54,23 @@ var _fhdk_done = false;
 var _keys_found = [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
 var _last_event_id = -1;
 var _events = [
-	// x, y, w, h, glitch setup, key, text
-	[ 14, 10, 1, 3, 100000, 0, "This place looks a bit strange." ],
-	[ 16, 20, 6, 3, 100000, 0, "Hmm... that obelisk seems nice." ],
-	[ 27, 14, 3, 7, 100000, 0, "What the..." ],
-	[ 22, 9, 8, 3, 100000, 0, "I've seen that door before." ],
-	[ 26, 5, 1, 1, 100000, 0, "That one looks nasty." ],
-	[ 13, 3, 1, 5, 100000, 1, "" ],
-	[ 12, 3, 1, 5, 1500, 2, "" ],
-	[ 33, 11, 4, 1, 1500, 3, "" ],
-	[ 39, 14, 4, 1, 1500, 4, "" ],
-	[ 55, 2, 3, 1, 1500, 5, "" ],
-	[ 1, 20, 7, 1, 1500, 6, "" ],
-	[ 26, 29, 1, 5, 100000, 7, "" ],
-	[ 37, 29, 7, 5, 100000, 7, "Congratulations! You've completed the game." ]
+	// x, y, w, h, glitch setup, key, text, is from player?
+	[ 14, 10, 1, 3, 100000, 0, "This place looks a bit strange.", 1 ],
+	[ 16, 20, 3, 3, 100000, 0, "Hmm... that obelisk looks nice.", 1 ],
+	[ 19, 20, 3, 3, 100000, 0, "Try to use the obelisk (button \"E\")", 0 ],
+	[ 23, 14, 3, 7, 100000, 0, "You can pick up some of the items (button \"Q\")", 0 ],
+	[ 27, 14, 3, 7, 100000, 0, "What the...", 1 ],
+	[ 24, 9, 6, 3, 100000, 0, "I've seen that door before.", 1 ],
+	[ 22, 9, 2, 3, 100000, 0, "There are more items to grab and to use, experiment", 0 ],
+	[ 26, 5, 1, 1, 100000, 0, "That one looks nasty.", 1 ],
+	[ 13, 3, 1, 5, 100000, 1 ],
+	[ 12, 3, 1, 5, 1500, 2 ],
+	[ 33, 11, 4, 1, 1500, 3 ],
+	[ 39, 14, 4, 1, 1500, 4 ],
+	[ 55, 2, 3, 1, 1500, 5 ],
+	[ 1, 20, 7, 1, 1500, 6 ],
+	[ 26, 29, 1, 5, 100000, 7 ],
+	[ 37, 29, 7, 5, 100000, 0, "Congratulations! You've completed the game.", 0 ]
 ];
 
 function onResize()
@@ -287,7 +290,7 @@ function fireEvent()
 		{
 			if (_events[i][6] && _last_event_id != i)
 			{
-				uiShowMessage(_events[i][6]);
+				uiShowMessage(_events[i][6], _events[i][7]);
 			}
 			_glitch_time_left = _events[i][4];
 			_keys_found[_events[i][5]] = 1;
