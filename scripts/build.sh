@@ -324,7 +324,7 @@ check_result()
 	fi
 }
 
-tmp=`realpath "$0"`
+tmp=`readlink -f "$0"`
 dir=`dirname "$tmp"`
 
 cd "$dir/.."
