@@ -13,7 +13,7 @@ fi
 build_number=$((build_number + 1))
 echo "$build_number" > .build_number
 
-base64_data=`php ./scripts/base64.php ./src/sprites.png | sed -e 's,\/,\\\\/,g' | sed -e 's,\+,\\\\+,g'`
+base64_data=`cat ./src/sprites.png | base64 -w 0`
 
 now=`date +%Y%m%d_%H%M%S`
 build_id="${now}_build_${build_number}"
@@ -23,7 +23,7 @@ rsync -xa --delete-during ./src/ ./dist/
 
 rm dist/resources.js dist/editor.html
 
-cat ./src/resources.js | sed -r "s/SPRITESHEET_URL = \"[^\"]+\"/SPRITESHEET_URL = \"${base64_data}\"/g" > dist/resources.js
+cat ./src/resources.js | sed -r "s!SPRITESHEET_URL = \"[^\"]+\"!SPRITESHEET_URL = \"data:image/png;base64,${base64_data}\"!g" > dist/resources.js
 cat ./src/editor.html | sed -r "s,<!-- build id -->,${build_id},g" > dist/editor.html
 
 chmod -R ugo+rx ./dist
