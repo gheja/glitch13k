@@ -1,5 +1,8 @@
-before_script:
-  - ./scripts/prepare.sh
+addons:
+  apt:
+    packages:
+      - zlib1g-dev
+      - g++
 
 script:
   - ./scripts/build.sh
