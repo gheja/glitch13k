@@ -328,20 +328,27 @@ dir=`dirname "$tmp"`
 
 cd "$dir/.."
 
+env
+
+pwd
 prepare
 
+pwd
 if [ "$stage1_enabled" == "y" ]; then
 	do_stage1
 fi
 
+pwd
 if [ "$stage2_enabled" == "y" ]; then
 	do_stage2
 fi
 
+pwd
 if [ "$stage3_enabled" == "y" ]; then
 	do_stage3
 fi
 
+pwd
 if [ "$stage4_enabled" == "y" ]; then
 	do_stage4
 fi
