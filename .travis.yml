@@ -3,7 +3,7 @@ addons:
     packages:
       - zlib1g-dev
       - g++
-      - openjdk7
+      - openjdk-7-jdk
 
 script:
   - ./scripts/build.sh
