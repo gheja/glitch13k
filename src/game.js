@@ -74,6 +74,18 @@ var _events = [
 	[ 37, 29, 7, 5, 100000, 0, "Congratulations! You've completed the game.", 0 ]
 ];
 
+var _tile_highlights = [
+	["fff", [ [6,1,1,2], [13,10,2,3] ] ],
+	["666", [ [10,7,2,1], [11,3,2,3] ] ],
+	["3f3", [ [1,7,2,1], [34,7,2,2] ] ],
+	["3af", [ [10,11,2,1], [34,10,3,2] ] ],
+	["363", [ [1,11,2,1], [40,14,3,2] ] ],
+	["33a", [ [10,15,2,1], [55,1,3,2] ] ],
+	["fa3", [ [2,16,1,2], [1,19,3,2] ] ],
+	["f33", [ [6,16,1,2], [26,31,2,3] ] ]
+];
+
+
 function onResize()
 {
 	var scale, w, h, dpr, bsr;
@@ -356,7 +368,7 @@ function getGroundTileId(x, y)
 
 function drawTiles()
 {
-	var x, y, c, g, a;
+	var x, y, c, g, a, i, j;
 	
 	_ctx.fillStyle = "#111";
 	_ctx.fillRect(0, 0, WIDTH, HEIGHT);
@@ -378,6 +390,25 @@ function drawTiles()
 					drawTile16(x * 16, y * 16, T_WALL, 0, -1);
 				}
 			}
+			
+			_ctx.globalAlpha = 0.3;
+			for (i=0; i<_tile_highlights.length; i++)
+			{
+				for (j=0; j<_tile_highlights[i][1].length; j++)
+				{
+					if (
+						toTile(a.realX) >= _tile_highlights[i][1][j][0] && 
+						toTile(a.realX) < _tile_highlights[i][1][j][0] + _tile_highlights[i][1][j][2] &&
+						toTile(a.realY) >= _tile_highlights[i][1][j][1] && 
+						toTile(a.realY) < _tile_highlights[i][1][j][1] + _tile_highlights[i][1][j][3]
+					)
+					{
+						_ctx.fillStyle = "#" + _tile_highlights[i][0];
+						_ctx.fillRect(x * 16, y * 16, 16, 16);
+					}
+				}
+			}
+			_ctx.globalAlpha = 1;
 		}
 	}
 }
