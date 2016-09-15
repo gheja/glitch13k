@@ -1,12 +1,14 @@
-# Glitch in outer space
+# Glitch on Space Station 13
 
 [![Build Status](https://travis-ci.org/gheja/glitch13k.svg?branch=master)](https://travis-ci.org/gheja/glitch13k)
 
-A js13kGames entry for the theme glitch.
+A puzzle game originally created for the js13kGames 2016, submitted as Glitch in Outer Space.
 
 Js13kGames entry: http://js13kgames.com/entries/glitch-in-outer-space
 
 Branch for the entry submitted: https://github.com/gheja/glitch13k/tree/js13kentry
+
+Webpage and latest version: http://www.goss13.com/
 
 ## Original descripton
 
