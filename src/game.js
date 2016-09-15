@@ -80,16 +80,11 @@ function onResize()
 	
 	dpr = window.devicePixelRatio || 1;
 	
-/*
-	// NOTE: for old browsers, pre-2013
 	bsr = _final_ctx.webkitBackingStorePixelRatio ||
 		_final_ctx.mozBackingStorePixelRatio ||
 		_final_ctx.msBackingStorePixelRatio ||
 		_final_ctx.oBackingStorePixelRatio ||
 		_final_ctx.backingStorePixelRatio || 1;
-*/
-	
-	bsr = _final_ctx.backingStorePixelRatio || 1;
 	
 	_pixel_ratio = dpr / bsr;
 	
