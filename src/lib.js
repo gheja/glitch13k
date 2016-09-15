@@ -133,13 +133,10 @@ function onSameTile(a, b)
 
 function fixCanvasContextSmoothing(ctx)
 {
-/*
 	ctx.imageSmoothingEnabled = false;
 	ctx.mozImageSmoothingEnabled = false;
 	ctx.webkitImageSmoothingEnabled = false;
 	ctx.msImageSmoothingEnabled = false;
-*/
-	ctx.imageSmoothingEnabled = false;
 }
 
 function lerp(a, b, position)
