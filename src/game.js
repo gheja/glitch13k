@@ -1,6 +1,7 @@
 "use strict";
 
 var _spritesheet;
+var _spritesheet_loaded = false;
 var _tile_canvas;
 var _tile_ctx;
 var _object_canvas;
@@ -677,6 +678,11 @@ function drawFhdks()
 function gameDrawAll()
 {
 	var vx, vy, a, b, c, x, y;
+	
+	if (!_spritesheet_loaded)
+	{
+		return;
+	}
 	
 	if (_view_update_needed)
 	{
