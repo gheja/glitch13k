@@ -1049,10 +1049,6 @@ function gameUpdate()
 	_profiler.draw();
 // DEBUG END
 	
-	// we need to redraw immediately after restart
-	// so we should not clear after gameRestart()
-	_view_update_needed = false;
-	
 	if (!_player_obj.destroyed && (_center_state.tile == TILE_VOID || (_center_state.tile == TILE_VOID2 && !_player_obj.superTime > 0)))
 	{
 		gameExplodeAndRestart();
