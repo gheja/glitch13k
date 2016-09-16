@@ -30,11 +30,17 @@ function mainUpdate()
 	}
 }
 
+function spritesheetLoadedCallback()
+{
+	_spritesheet_loaded = true;
+}
+
 function init()
 {
 	var x, y;
 	
 	_spritesheet = new Image();
+	_spritesheet.addEventListener("load", spritesheetLoadedCallback);
 	_spritesheet.src = SPRITESHEET_URL;
 	
 	_body = document.getElementsByTagName("body")[0];

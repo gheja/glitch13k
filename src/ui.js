@@ -5,6 +5,8 @@ var _ui_ctx = null;
 
 var _ui_tips = [ "Arrows to move, Q to grab and E to use", "Not all that falls is lost forever.", "Some levels need your ears." ];
 var _ui_message;
+var _ui_message_color_fg = "#fff";
+var _ui_message_color_bg = "#314";
 var _ui_tip_index = -1;
 var _ui_ticks;
 var _ui_z;
@@ -37,7 +39,6 @@ function uiResize()
 
 function uiUpdate()
 {
-/*
 	var a;
 	
 	_ui_ticks++;
@@ -62,11 +63,13 @@ function uiUpdate()
 	_ui_ctx.font = (10 * _ui_z) + "px Arial";
 	_ui_ctx.textAlign = "center";
 	_ui_ctx.textBaseline = "middle";
-	_ui_ctx.fillStyle = "rgba(0,0,0," + (0.4 * a) + ")";
-	_ui_ctx.fillRect(0, 50 - _ui_z * 8, window.innerWidth, _ui_z * 16);
-	_ui_ctx.fillStyle = "rgba(255,255,255," + a + ")";
-	_ui_ctx.fillText(_ui_message, window.innerWidth / 2, 50);
-*/
+	_ui_ctx.globalAlpha = a;
+	_ui_ctx.fillStyle = _ui_message_color_bg;
+	_ui_ctx.fillRect(0, a * 50 - _ui_z * 8, window.innerWidth, _ui_z * 16);
+	_ui_ctx.fillStyle = _ui_message_color_fg;
+	_ui_ctx.fillText(_ui_message, window.innerWidth / 2, a * 50);
+	_ui_ctx.globalAlpha = 1;
+/*
 	_ui_ticks++;
 	
 	_ui_ctx.clearRect(0, 0, _ui_canvas.width, _ui_canvas.height);
@@ -82,6 +85,7 @@ function uiUpdate()
 		_ui_ctx.fillStyle = "#fff";
 		_ui_ctx.fillText(_ui_message, window.innerWidth / 2, 50);
 	}
+*/
 	
 	if (_touch_available)
 	{
@@ -89,16 +93,28 @@ function uiUpdate()
 	}
 }
 
-function uiShowMessage(s)
+function uiShowMessage(s, player)
 {
-	_ui_message = s;
 	_ui_ticks = 0;
+	
+	if (player)
+	{
+		_ui_message = "\"" + s + "\"";
+		_ui_message_color_bg = "#fff";
+		_ui_message_color_fg = "#f33";
+	}
+	else
+	{
+		_ui_message = s;
+		_ui_message_color_bg = "#314";
+		_ui_message_color_fg = "#fff";
+	}
 }
 
 function uiReset()
 {
 	_ui_tip_index = (_ui_tip_index + 1) % _ui_tips.length;
-	uiShowMessage(_ui_tips[_ui_tip_index]);
+	uiShowMessage(_ui_tips[_ui_tip_index], 0);
 }
 
 function uiInit()

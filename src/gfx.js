@@ -25,7 +25,7 @@ function drawImageAdvanced(sx, sy, sw, sh, dx, dy, dw, dh, mirrored, palette_id)
 		canvas = newCanvas();
 		// TODO: dynamic size?
 		canvas.width = 16;
-		canvas.width = 16;
+		canvas.height = 16;
 		ctx = canvas.getContext("2d");
 		
 		ctx.translate(dw / 2, dh / 2);

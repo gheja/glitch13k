@@ -133,13 +133,10 @@ function onSameTile(a, b)
 
 function fixCanvasContextSmoothing(ctx)
 {
-/*
 	ctx.imageSmoothingEnabled = false;
 	ctx.mozImageSmoothingEnabled = false;
 	ctx.webkitImageSmoothingEnabled = false;
 	ctx.msImageSmoothingEnabled = false;
-*/
-	ctx.imageSmoothingEnabled = false;
 }
 
 function lerp(a, b, position)
@@ -154,7 +151,7 @@ function lerp256(a, b, position)
 
 function colors_to_string(a)
 {
-	return a[0] + "-" + a[1] + "-" + a[2] + "-" + a[3];
+	return a.join("-");
 }
 
 function eee(value, min, max, pow)

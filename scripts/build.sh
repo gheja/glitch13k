@@ -142,6 +142,7 @@ prepare()
 		
 		if [ ! -e ./build/advancecomp/advancecomp-1.20/advzip ]; then
 			_error "Failed."
+			exit 1
 		fi
 	fi
 	_message "  * AdvZIP: OK"

@@ -51,6 +51,7 @@ var LightsOut = function(posX, posY, width, height, difficulty)
 		for (x=0; x<width; x++)
 		{
 			a = new ObjSwitch(posX + x, posY + y, 1);
+			a.switchStatus = true;
 			a.use = this.toggle.bind(this, x, y);
 			this.fields[y].push(a);
 			_objs.push(a);

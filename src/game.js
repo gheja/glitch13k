@@ -1,6 +1,7 @@
 "use strict";
 
 var _spritesheet;
+var _spritesheet_loaded = false;
 var _tile_canvas;
 var _tile_ctx;
 var _object_canvas;
@@ -54,21 +55,36 @@ var _fhdk_done = false;
 var _keys_found = [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
 var _last_event_id = -1;
 var _events = [
-	// x, y, w, h, glitch setup, key, text
-	[ 14, 10, 1, 3, 100000, 0, "This place looks a bit strange." ],
-	[ 16, 20, 6, 3, 100000, 0, "Hmm... that obelisk seems nice." ],
-	[ 27, 14, 3, 7, 100000, 0, "What the..." ],
-	[ 22, 9, 8, 3, 100000, 0, "I've seen that door before." ],
-	[ 26, 5, 1, 1, 100000, 0, "That one looks nasty." ],
-	[ 13, 3, 1, 5, 100000, 1, "" ],
-	[ 12, 3, 1, 5, 1500, 2, "" ],
-	[ 33, 11, 4, 1, 1500, 3, "" ],
-	[ 39, 14, 4, 1, 1500, 4, "" ],
-	[ 55, 2, 3, 1, 1500, 5, "" ],
-	[ 1, 20, 7, 1, 1500, 6, "" ],
-	[ 26, 29, 1, 5, 100000, 7, "" ],
-	[ 37, 29, 7, 5, 100000, 7, "Congratulations! You've completed the game." ]
+	// x, y, w, h, glitch setup, key, text, is from player?
+	[ 14, 10, 1, 3, 100000, 0, "This place looks a bit strange.", 1 ],
+	[ 16, 20, 3, 3, 100000, 0, "Hmm... that obelisk looks nice.", 1 ],
+	[ 19, 20, 3, 3, 100000, 0, "Try to use the obelisk (button \"E\")", 0 ],
+	[ 23, 14, 3, 7, 100000, 0, "You can pick up some of the items (button \"Q\")", 0 ],
+	[ 27, 14, 3, 7, 100000, 0, "What the...", 1 ],
+	[ 24, 9, 6, 3, 100000, 0, "I've seen that door before.", 1 ],
+	[ 22, 9, 2, 3, 100000, 0, "There are more items to grab and to use, experiment", 0 ],
+	[ 26, 5, 1, 1, 100000, 0, "That one looks nasty.", 1 ],
+	[ 13, 3, 1, 5, 100000, 1 ],
+	[ 12, 3, 1, 5, 1500, 2 ],
+	[ 33, 11, 4, 1, 1500, 3 ],
+	[ 39, 14, 4, 1, 1500, 4 ],
+	[ 55, 2, 3, 1, 1500, 5 ],
+	[ 1, 20, 7, 1, 1500, 6 ],
+	[ 26, 29, 1, 5, 100000, 7 ],
+	[ 37, 29, 7, 5, 100000, 0, "Congratulations! You've completed the game.", 0 ]
 ];
+
+var _tile_highlights = [
+	["fff", [ [6,1,1,2], [13,10,2,3] ] ],
+	["666", [ [10,7,2,1], [11,3,2,3] ] ],
+	["3f3", [ [1,7,2,1], [34,7,2,2] ] ],
+	["3af", [ [10,11,2,1], [34,10,3,2] ] ],
+	["363", [ [1,11,2,1], [40,14,3,2] ] ],
+	["33a", [ [10,15,2,1], [55,1,3,2] ] ],
+	["fa3", [ [2,16,1,2], [1,19,3,2] ] ],
+	["f33", [ [6,16,1,2], [26,31,2,3] ] ]
+];
+
 
 function onResize()
 {
@@ -76,16 +92,11 @@ function onResize()
 	
 	dpr = window.devicePixelRatio || 1;
 	
-/*
-	// NOTE: for old browsers, pre-2013
 	bsr = _final_ctx.webkitBackingStorePixelRatio ||
 		_final_ctx.mozBackingStorePixelRatio ||
 		_final_ctx.msBackingStorePixelRatio ||
 		_final_ctx.oBackingStorePixelRatio ||
 		_final_ctx.backingStorePixelRatio || 1;
-*/
-	
-	bsr = _final_ctx.backingStorePixelRatio || 1;
 	
 	_pixel_ratio = dpr / bsr;
 	
@@ -287,7 +298,7 @@ function fireEvent()
 		{
 			if (_events[i][6] && _last_event_id != i)
 			{
-				uiShowMessage(_events[i][6]);
+				uiShowMessage(_events[i][6], _events[i][7]);
 			}
 			_glitch_time_left = _events[i][4];
 			_keys_found[_events[i][5]] = 1;
@@ -357,7 +368,7 @@ function getGroundTileId(x, y)
 
 function drawTiles()
 {
-	var x, y, c, g, a;
+	var x, y, c, g, a, i, j;
 	
 	_ctx.fillStyle = "#111";
 	_ctx.fillRect(0, 0, WIDTH, HEIGHT);
@@ -379,6 +390,25 @@ function drawTiles()
 					drawTile16(x * 16, y * 16, T_WALL, 0, -1);
 				}
 			}
+			
+			_ctx.globalAlpha = 0.3;
+			for (i=0; i<_tile_highlights.length; i++)
+			{
+				for (j=0; j<_tile_highlights[i][1].length; j++)
+				{
+					if (
+						toTile(a.realX) >= _tile_highlights[i][1][j][0] && 
+						toTile(a.realX) < _tile_highlights[i][1][j][0] + _tile_highlights[i][1][j][2] &&
+						toTile(a.realY) >= _tile_highlights[i][1][j][1] && 
+						toTile(a.realY) < _tile_highlights[i][1][j][1] + _tile_highlights[i][1][j][3]
+					)
+					{
+						_ctx.fillStyle = "#" + _tile_highlights[i][0];
+						_ctx.fillRect(x * 16, y * 16, 16, 16);
+					}
+				}
+			}
+			_ctx.globalAlpha = 1;
 		}
 	}
 }
@@ -674,6 +704,11 @@ function drawFhdks()
 function gameDrawAll()
 {
 	var vx, vy, a, b, c, x, y;
+	
+	if (!_spritesheet_loaded)
+	{
+		return;
+	}
 	
 	if (_view_update_needed)
 	{
@@ -1044,10 +1079,6 @@ function gameUpdate()
 // DEBUG BEGIN
 	_profiler.draw();
 // DEBUG END
-	
-	// we need to redraw immediately after restart
-	// so we should not clear after gameRestart()
-	_view_update_needed = false;
 	
 	if (!_player_obj.destroyed && (_center_state.tile == TILE_VOID || (_center_state.tile == TILE_VOID2 && !_player_obj.superTime > 0)))
 	{

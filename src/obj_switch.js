@@ -4,12 +4,12 @@
  * @constructor
  * @extends {Obj}
  */
-var ObjSwitch = function(x, y, status)
+var ObjSwitch = function(x, y)
 {
 	this.initObj(x, y, 0, 0, 1);
 	
 	this.canBeUsed = true;
-	this.switchStatus = status;
+	this.switchStatus = false;
 	this.overlaySpritePalette = _animated_palettes[4];
 }
 
