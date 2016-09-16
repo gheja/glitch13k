@@ -56,6 +56,20 @@ try()
 	fi
 }
 
+_travis_fold_begin()
+{
+	if [ "$TRAVIS" != "" ]; then
+		echo -en "travis_fold:start:$@\\r"
+	fi
+}
+
+_travis_fold_end()
+{
+	if [ "$TRAVIS" != "" ]; then
+		echo -en "travis_fold:end:$@\\r"
+	fi
+}
+
 is_js13k="n"
 stage1_enabled="y"
 stage2_enabled="y"
@@ -65,11 +79,14 @@ advzip_test_enabled="n"
 
 prepare()
 {
+	
 	[ -d ./build ] || try mkdir -vp ./build
 	[ -d ./build/compiler ] || try mkdir -vp ./build/compiler
 	[ -d ./build/advancecomp ] || try mkdir -vp ./build/advancecomp
 	
 	_message "Checking dependencies..."
+	_travis_fold_begin "prepare"
+	
 	which java 2>/dev/null >/dev/null
 	if [ $? != 0 ]; then
 		_error "ERROR: \"java\" not found in PATH, probably is not installed."
@@ -146,11 +163,15 @@ prepare()
 		fi
 	fi
 	_message "  * AdvZIP: OK"
+	
+	_travis_fold_end "prepare"
 }
 
 do_stage1()
 {
 	_header "Stage 1"
+	
+	_travis_fold_begin "stage1"
 	
 	_message "  * Cleaning up build stage directory..."
 	rm -rv ./build/stage1 || /bin/true
@@ -202,11 +223,16 @@ do_stage1()
 	ls -albtr
 	
 	cd ../..
+	
+	_travis_fold_end "stage1"
 }
 
 do_stage2()
 {
 	_header "Stage 2"
+	
+	_travis_fold_begin "stage2"
+	
 	_message "  * Cleaning up build stage directory..."
 	rm -rv ./build/stage2 || /bin/true
 	try mkdir -vp ./build/stage2
@@ -234,11 +260,15 @@ do_stage2()
 	
 	cd ../..
 	
+	_travis_fold_end "stage2"
 }
 
 do_stage3()
 {
 	_header "Stage 3"
+	
+	_travis_fold_begin "stage3"
+	
 	_message "  * Cleaning up build stage directory..."
 	rm -rv ./build/stage3 || /bin/true
 	try mkdir -vp ./build/stage3
@@ -263,11 +293,16 @@ do_stage3()
 	ls -alb
 	
 	cd ../..
+	
+	_travis_fold_end "stage3"
 }
 
 do_stage4()
 {
 	_header "Stage 4"
+	
+	_travis_fold_begin "stage4"
+	
 	_message "  * Cleaning up build stage directory..."
 	rm -rv ./build/stage4 || /bin/true
 	try mkdir -vp ./build/stage4
@@ -293,13 +328,19 @@ do_stage4()
 	ls -albtr *.zip
 	
 	cd ../..
+	
+	_travis_fold_end "stage4"
 }
 
 save()
 {
+	_travis_fold_begin "save"
+	
 	mkdir -p ./backups
 	
 	tar -c --one-file-system --numeric-owner --exclude ./build/compiler --exclude ./build/advancecomp ./src ./build | gzip -c9 > ./backups/${now}_package.tar.gz
+	
+	_travis_fold_end "save"
 }
 
 check_result()
