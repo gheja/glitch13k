@@ -8,7 +8,7 @@ Js13kGames entry: http://js13kgames.com/entries/glitch-in-outer-space
 
 Branch for the entry submitted: https://github.com/gheja/glitch13k/tree/js13kentry
 
-Webpage and latest version: http://www.goss13.com/
+Webpage and latest version: https://gheja.itch.io/glitch-on-space-station-13
 
 ## Original descripton
 
